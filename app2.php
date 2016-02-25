@@ -1,12 +1,9 @@
 <?php
-
+	//requier another php file
+	require_once("../../config.php");
+	
 	$everything_was_okay = true;
 	
- //getting the message from address
- // if there is ?name=.. then $_GET["name"]
- //$my_message = $_GET["message"];
- //$to = $_GET["to"];
- //$from = $_GET["from"];
  
 	//check if there is variable in the URL
 	if(isset($_GET["message"])){
@@ -56,7 +53,34 @@
 	
 		echo "Saving to database...";
 		
-		}
+		
+		//connection with username and password
+		//access username from config
+		//echo $db_username;
+		
+	//1 servername
+	//2 username
+	//3 password
+	// 4 database
+	$mysql = new mysqli("localhost", $db_username, $db_password, "webpr2016_karoliinar");
+		
+	$stmt = $mysql->prepare("INSERT INTO message_sample (recipient, message) VALUES (?,?)");
+	
+	//we are replacing question marks with values
+	//s-string, date or smth that is based on characters and
+	//i-integer, number
+	//d-decimal, float
+	
+	//for each question mark its type with one letter
+	$stmt->bind_param("ss",$_GET["to"], $_GET["message"]);	
+	
+	if($stmt->execute()){
+		echo "saved sucsessfully";
+	}else{
+		echo $stmt->error;
+	}
+ 
+ 
  
 ?>
 
@@ -66,9 +90,6 @@
 	<label for="message">Message:* <label><br>
 	<input type="text" name="message"><br>
 	
-
-<form>
-
 <?php
 
 ?>
@@ -77,9 +98,7 @@
 	<label for="to">To <label><br>
 	<input type="text" name="to"><br>
 	
-
-<form> 
-<label for="from">From <label><br>
+<form method="get">
+	<lable for="from">From <label><br>
 	<input type="text" name="from"><br>
-	<input type="submit" value="Save to DB">
-	
+	<input type="submit" value="Save to DB">	
